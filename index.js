@@ -8,7 +8,10 @@ const { listAllCollections } = require('./commands/listAllCollections')
 const removeAllCollections = require('./commands/removeAllCollections')
 const createEnvironment = require('./commands/createEnvironment')
 const { listAllEnvironments } = require('./commands/listAllEnvironments')
-const runCollection = require('./commands/runCollection')
+const { runCollection } = require('./commands/runCollection')
+const scheduleRun = require('./commands/scheduler')
+const { listAllScheduledRuns } = require('./commands/listAllScheduledRuns')
+const { purgeAllRuns, disableRun, destroyRun } = require('./commands/destroyRuns')
 
 program
     .command('listAllApiKeys')
@@ -60,6 +63,36 @@ program
     .option('-r, --report-dir <rdir>', 'The directory to which reports should be exported.')
     .action(runCollection)
 
+program
+    .command('scheduleRun')
+    .description('Schedule a cronjob for newman run.')
+    .requiredOption('-c, --collection-name <cname>', 'The name of the collection to run.')
+    .option('-e, --environment-name <ename>', 'The name of the environment.')
+    .requiredOption('-r, --report-dir <rdir>', 'The directory to which reports should be exported.')
+    .requiredOption('-s, --schedule <schedule>', 'cronjob scedule (e.g., 0 1 * * *)')
+    .action(scheduleRun)
+
+program
+    .command('listAllScheduledRuns')
+    .description('List all the Scheduled Runs.')
+    .action(listAllScheduledRuns)
+
+program
+    .command('purgeAllRuns')
+    .description('Destroy all scheduled runs.')
+    .action(purgeAllRuns)
+
+program
+    .command('disableRun')
+    .description('Disable a scheduled run.')
+    .requiredOption('-u, ---uuid <uuid>', 'The uuid of run job to disable.')
+    .action(disableRun)
+
+program
+    .command('destroyRun')
+    .description('Destroy a scheduled run.')
+    .requiredOption('-u, ---uuid <uuid>', 'The uuid of run job to disable.')
+    .action(destroyRun)
 
 program.addHelpText('after', `Author : Deepak Verma(dverma-ext@beachbody.com)`);
 

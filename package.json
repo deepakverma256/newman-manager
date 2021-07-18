@@ -15,7 +15,9 @@
     "conf": "^10.0.1",
     "newman": "^4.6.1",
     "newman-reporter-html": "^1.0.5",
-    "promptly": "^3.2.0"
+    "node-cron": "^3.0.0",
+    "promptly": "^3.2.0",
+    "uuid": "^3.4.0"
   },
   "bin": {
     "newman-manager": "index.js"

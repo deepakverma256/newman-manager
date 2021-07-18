@@ -23,7 +23,7 @@ function runCollection(options) {
         } else {
             reportDir = DEFAULT_REPORT_LOCATION
         }
-        runNewman(collection.url, environment.url, reportDir);
+        runNewman(collection, environment, reportDir);
     } else {
         console.log(
             chalk.bgRedBright(`Collection does not exist. Please select existing one OR create new collection.`)
@@ -31,13 +31,13 @@ function runCollection(options) {
     }
 }
 
-function runNewman(collectionUrl, environmentUrl, reportDir) {
+function runNewman(collection, environment, reportDir) {
     // call newman.run to pass `options` object and wait for callback
-    let reportFilePath = generateFileName(reportDir)
+    let reportFilePath = generateFileName(collection.name, reportDir)
 
     newman.run({
-        collection: collectionUrl, // can also provide a URL or path to a local JSON file.
-        environment: environmentUrl,
+        collection: collection.url, // can also provide a URL or path to a local JSON file.
+        environment: environment.url,
         reporters: ['cli', 'json', 'html'],
         reporter: {
             html: {
@@ -51,10 +51,10 @@ function runNewman(collectionUrl, environmentUrl, reportDir) {
         if (err) { throw err; }
         console.log('collection run complete!');
     });
-     console.log(reportFilePath)
+    console.log(reportFilePath)
 }
 
-function generateFileName(dir) {
+function generateFileName(collName, dir) {
     console.log(dir)
     let date_ob = new Date();
 
@@ -77,7 +77,10 @@ function generateFileName(dir) {
     // current seconds
     let seconds = date_ob.getSeconds();
 
-    return dir + '/' + month + date + year + hours + minutes + seconds
+    return dir + '/' + collName + '_' + month + date + year + hours + minutes + seconds
 }
 
-module.exports = runCollection;
+module.exports = {
+    runCollection: runCollection,
+    runNewman: runNewman
+};
