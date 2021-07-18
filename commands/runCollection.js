@@ -3,19 +3,27 @@ const chalk = require('chalk')
 const { listAllCollections, getCollectionByName } = require('./listAllCollections')
 const { listAllEnvironments, getEnvironemtByName } = require('./listAllEnvironments')
 const newman = require('newman');
-const { exec } = require("child_process");
+const path = require('path');
 
 function runCollection(options) {
-    console.log(options.collectionName);
+    let DEFAULT_REPORT_LOCATION = '.'
+    console.log(options);
     let collection = getCollectionByName(options.collectionName);
     if (collection !== undefined) {
+        let environment;
         if (options.environmentName) {
-            let environment = getEnvironemtByName(options.environmentName);
-            runNewman(collection.url, environment.url);
+            environment = getEnvironemtByName(options.environmentName);
         } else {
-            let environment = getEnvironemtByName(collection.defaultEnv);
-            runNewman(collection.url, environment.url);
+            environment = getEnvironemtByName(collection.defaultEnv);
         }
+
+        let reportDir;
+        if (options.reportDir) {
+            reportDir = options.reportDir
+        } else {
+            reportDir = DEFAULT_REPORT_LOCATION
+        }
+        runNewman(collection.url, environment.url, reportDir);
     } else {
         console.log(
             chalk.bgRedBright(`Collection does not exist. Please select existing one OR create new collection.`)
@@ -23,27 +31,53 @@ function runCollection(options) {
     }
 }
 
-function runNewman(collectionUrl, environmentUrl) {
+function runNewman(collectionUrl, environmentUrl, reportDir) {
     // call newman.run to pass `options` object and wait for callback
+    let reportFilePath = generateFileName(reportDir)
 
     newman.run({
         collection: collectionUrl, // can also provide a URL or path to a local JSON file.
         environment: environmentUrl,
-        reporters: ['cli', 'json', 'html', 'allure'],
+        reporters: ['cli', 'json', 'html'],
         reporter: {
             html: {
-                export: '../reports/htmlResults3.html', // If not specified, the file will be written to `newman/` in the current working directory.
-            },
-            allure: {
-                export: '.../reports/allure'
+                export: reportFilePath + '.html', // If not specified, the file will be written to `newman/` in the current working directory.
             },
             json: {
-                export: '../reports/json/jsonResult3.json'
+                export: reportFilePath + '.json'
             }
         }
     }, function (err) {
         if (err) { throw err; }
         console.log('collection run complete!');
     });
+     console.log(reportFilePath)
 }
+
+function generateFileName(dir) {
+    console.log(dir)
+    let date_ob = new Date();
+
+    // current date
+    // adjust 0 before single digit date
+    let date = ("0" + date_ob.getDate()).slice(-2);
+
+    // current month
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+
+    // current year
+    let year = date_ob.getFullYear();
+
+    // current hours
+    let hours = date_ob.getHours();
+
+    // current minutes
+    let minutes = date_ob.getMinutes();
+
+    // current seconds
+    let seconds = date_ob.getSeconds();
+
+    return dir + '/' + month + date + year + hours + minutes + seconds
+}
+
 module.exports = runCollection;

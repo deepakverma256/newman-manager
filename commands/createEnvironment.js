@@ -23,7 +23,7 @@ function createEnvironment() {
                     return true;
                 }
             });
-            if (!isFoundExistingEnvl) {
+            if (!isFoundExistingEnv) {
                 name = newEnvName;
             }
 
@@ -42,7 +42,7 @@ function createEnvironment() {
         const uidAnswer = promptly.prompt('UID of environment: ', { timeout: timeoutSeconds });
         return uidAnswer;
     }).then((newEnvUid) => {
-        //console.log("New Uid recieved : ", newCollUid)
+        // console.log("New Uid recieved : ", newEnvUid)
         uid = newEnvUid;
         listAllApiKeyNames();
         const apiKeyAnswer = promptly.prompt('ApiKey: ', { timeout: timeoutSeconds });
@@ -72,6 +72,7 @@ function createEnvironment() {
             throw new Error('Something went wrong');
         }
     }).catch((exception) => {
+        console.log(`exception = ${exception}`);
         if (exception.message === ENV_EXITS) {
             console.log(
                 chalk.bgRedBright(`Environment already exist try again with a different name`)

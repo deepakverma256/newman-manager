@@ -57,6 +57,7 @@ program
     .description('run a collection.')
     .requiredOption('-c, --collection-name <cname>', 'The name of the collection to run.')
     .option('-e, --environment-name <ename>', 'The name of the environment.')
+    .option('-r, --report-dir <rdir>', 'The directory to which reports should be exported.')
     .action(runCollection)
 
 
